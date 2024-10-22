@@ -43,11 +43,12 @@ export class UsersController {
     return USERS;
   }
 
-  @Get('/userDetails/:mobile')
-  getuserDetails(@Param('mobile') mobile: string) {
-    console.log(USERS.find((user) => user.mobile === mobile));
+  @Get('/userDetails/:id')
+  getuserDetails(@Param('id') id: number) {
+    console.log(id);
+    console.log(USERS.find((user) => user.id == id));
     // return false;
-    let result = USERS.find((user) => user.mobile === mobile);
+    let result = USERS.find((user) => user.id == id);
     if (result) {
       return result;
     } else {
@@ -55,9 +56,26 @@ export class UsersController {
     }
   }
 
-  @Get('/deleteUser/:mobile')
-  deleteUserDetails(@Param('mobile') mobile: string) {
-    let result = USERS.pop(mobile);
+  @Post('/update_user')
+  updateUser(
+    @Body() UpdateUsersDTo: CreateUsersDTO,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    let id = req.body.id;
+    let userInd = USERS.findIndex((user) => user.id == id);
+    console.log(userInd);
+    if (!userInd) {
+      return 'NO Data Found';
+    }
+
+    USERS[userInd] = UpdateUsersDTo;
+    return 'Profile has been updated';
+  }
+
+  @Post('/deleteUser/:id')
+  deleteUserDetails(@Param('id') id: number) {
+    let result = USERS.filter((user) => user.id != id);
     if (result) {
       return result;
     } else {
